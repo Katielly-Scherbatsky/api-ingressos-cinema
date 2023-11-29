@@ -1,0 +1,31 @@
+{
+  "name": "api-ingressos-cinema",
+  "version": "1.0.0",
+  "description": "API - Gestão Ingressos do Cinema",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Katielly-Scherbatsky/api-ingressos-cinema.git#main"
+  },
+  "keywords": [
+    "api",
+    "ingressos",
+    "cinema"
+  ],
+  "author": "Katielly Bordin Santos",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Katielly-Scherbatsky/api-ingressos-cinema/issues"
+  },
+  "homepage": "https://github.com/Katielly-Scherbatsky/api-ingressos-cinema/tree/main#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
