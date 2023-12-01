@@ -12,6 +12,8 @@ CREATE TABLE cliente (
     contato VARCHAR(50)
 );
 
+SELECT * FROM cliente;
+
 INSERT INTO cliente (id_cliente, nome_cliente, email, rg, cpf, endereco, contato) VALUES
     (1, 'Roderic', 'rsalomon0@multiply.com', '132168170', '12452763284', 'PO Box 24693', '(398) 8552543'),
     (2, 'Lelia', 'lwhyteman1@hatena.ne.jp', '217927427', '03327665869', '13th Floor', '(149) 5862856'),
@@ -21,10 +23,10 @@ INSERT INTO cliente (id_cliente, nome_cliente, email, rg, cpf, endereco, contato
 
 CREATE TABLE venda (
     id_venda INT AUTO_INCREMENT PRIMARY KEY,
-    valor_venda DECIMAL(8,2),
-    data_hora_venda DATETIME,
-    forma_pagamento VARCHAR(20),
-    id_cliente INT,
+    valor_venda DECIMAL(8,2) NOT NULL,
+    data_hora_venda DATETIME NOT NULL,
+    forma_pagamento VARCHAR(20) NOT NULL,
+    id_cliente INT NOT NULL,
 	FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
 );
 
@@ -37,9 +39,9 @@ INSERT INTO venda (id_venda, valor_venda, data_hora_venda, forma_pagamento, id_c
 
 CREATE TABLE poltrona (
     id_poltrona INT AUTO_INCREMENT PRIMARY KEY,
-    numero_poltrona INT,
-    fileira VARCHAR(4),
-    status_poltrona BOOLEAN
+    numero_poltrona INT NOT NULL,
+    fileira VARCHAR(4) NOT NULL,
+    status_poltrona BOOLEAN NOT NULL
 );
 
 INSERT INTO poltrona (id_poltrona, numero_poltrona, fileira, status_poltrona) VALUES
@@ -51,9 +53,9 @@ INSERT INTO poltrona (id_poltrona, numero_poltrona, fileira, status_poltrona) VA
 
 CREATE TABLE sala (
     id_sala INT AUTO_INCREMENT PRIMARY KEY,
-    capacidade INT,
-    nome_sala VARCHAR(50),
-    local_sala VARCHAR(50)
+    capacidade INT NOT NULL,
+    nome_sala VARCHAR(50) NOT NULL,
+    local_sala VARCHAR(50) NOT NULL
 );
 
 INSERT INTO sala (id_sala, capacidade, nome_sala, local_sala) VALUES
@@ -65,11 +67,11 @@ INSERT INTO sala (id_sala, capacidade, nome_sala, local_sala) VALUES
 
 CREATE TABLE filme (
     id_filme INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(50),
-    sinopse VARCHAR(255),
-    atores VARCHAR(255),
-    diretor VARCHAR(50),
-    tempo INT
+    titulo VARCHAR(50) NOT NULL,
+    sinopse VARCHAR(255) NOT NULL,
+    atores VARCHAR(255) NOT NULL,
+    diretor VARCHAR(50) NOT NULL,
+    tempo INT NOT NULL
 );
 
 INSERT INTO filme (id_filme, titulo, sinopse, atores, diretor, tempo) VALUES
@@ -81,12 +83,12 @@ INSERT INTO filme (id_filme, titulo, sinopse, atores, diretor, tempo) VALUES
 
 CREATE TABLE sessao (
     id_sessao INT AUTO_INCREMENT PRIMARY KEY,
-    hora_inicio TIME,
-    hora_fim TIME,
-    data_sessao DATE,
-    valor_sessao DECIMAL(8,2),
-    id_sala INT,
-    id_filme INT,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    data_sessao DATE NOT NULL,
+    valor_sessao DECIMAL(8,2) NOT NULL,
+    id_sala INT NOT NULL,
+    id_filme INT NOT NULL,
     FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
     FOREIGN KEY (id_filme) REFERENCES filme(id_filme)
 );
@@ -100,10 +102,10 @@ INSERT INTO sessao (id_sessao, hora_inicio, hora_fim, data_sessao, valor_sessao,
 
 CREATE TABLE ingresso (
     id_ingresso INT AUTO_INCREMENT PRIMARY KEY,
-    valor_ingresso DECIMAL(8,2),
-    data_hora_ingresso DATETIME,
-    id_venda INT,
-    id_sessao INT,
+    valor_ingresso DECIMAL(8,2) NOT NULL,
+    data_hora_ingresso DATETIME NOT NULL,
+    id_venda INT NOT NULL,
+    id_sessao INT NOT NULL,
     FOREIGN KEY (id_venda) REFERENCES venda(id_venda),
     FOREIGN KEY (id_sessao) REFERENCES sessao(id_sessao)
 );
