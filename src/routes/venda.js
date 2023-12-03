@@ -8,7 +8,7 @@ router.get("/venda", vendaController.list);
 router.get("/venda/:codigo", vendaController.show);
 router.post("/venda", vendaController.create);
 router.put("/venda/:codigo", vendaController.update);
-router.delete("/venda/:codigo", vendaController.destroy);
+//router.delete("/venda/:codigo", vendaController.destroy);
 
 // exports das configs;
 module.exports = router;

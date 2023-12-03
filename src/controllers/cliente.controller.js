@@ -46,6 +46,7 @@ function create(request, response) {
     rg: "required|integer",
     cpf: "required|integer",
     endereco: "required",
+    contato: "integer",
   };
 
   const validacao = new Validator(request.body, regras);
@@ -100,6 +101,7 @@ function update(request, response) {
     rg: "required|integer",
     cpf: "required|integer",
     endereco: "required",
+    contato: "integer",
   };
 
   const validacao = new Validator(request.body, regras);

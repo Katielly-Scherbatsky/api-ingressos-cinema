@@ -5,156 +5,152 @@ const connection = require("../configs/mysql.config");
 function show(req, res) {
   const codigo = req.params.codigo;
 
-  if (codigo == undefined) {
-    return res.json({ erro: "Ocorreram erros ao buscar a informação" });
+  if (!codigo) {
+    return res.status(400).json({ erro: "Identificador não fornecido" });
   }
 
   connection.query(
-    "SELECT ven.*, cli.nome_cliente as nome_cliente FROM venda ven JOIN cliente cli ON ven.id_cliente = cli.id_cliente" +
-      "WHERE ven.id_venda = ?;",
+    `SELECT v.id_venda, v.valor_venda, v.data_hora_venda, v.forma_pagamento, c.nome_cliente FROM venda v
+      JOIN cliente c ON c.id_cliente = v.id_cliente
+      WHERE v.id_venda = ?;`,
     [codigo],
     function (err, resultado) {
       if (err) {
-        return res.json({
-          erro: "Ocorreram erros ao tentar salvar a informação",
+        return res.status(500).json({
+          erro: "Ocorreram erros ao tentar buscar a informação",
         });
       }
 
-      if (resultado.length == 0) {
-        return res.json({ erro: `O código #${codigo} não foi encontrado!` });
+      if (resultado.length === 0) {
+        return res
+          .status(404)
+          .json({ erro: `O código #${codigo} não foi encontrado!` });
       }
 
-      return res.json(resultado[0]);
+      return res.status(200).json(resultado[0]);
     }
   );
 }
 
-//function list
+// Function list
 function list(request, response) {
   connection.query(
-    "SELECT ven.*, cli.nome_cliente as nome_cliente FROM venda ven JOIN cliente cli ON ven.id_cliente = cli.id_cliente" +
-      "WHERE ven.id_venda = ?;",
+    `SELECT v.id_venda, v.valor_venda, v.data_hora_venda, v.forma_pagamento, c.nome_cliente FROM venda v
+      JOIN cliente c ON c.id_cliente = v.id_cliente;`,
     function (err, resultado) {
       if (err) {
-        return response.json({ erro: "Ocorreram erros ao buscar os dados" });
+        return response
+          .status(500)
+          .json({ erro: "Ocorreram erros ao buscar os dados" });
       }
-      return response.json({ dados: resultado });
+      return response.status(200).json({ dados: resultado });
     }
   );
 }
 
-//function create
+// Function create
 function create(request, response) {
   const regras = {
-    valor_venda: "required|min:5",
-    data_hora_venda: "required|email",
-    forma_pagamento: "required|integer",
+    valor_venda: "required|numeric|min:0.01", // valor seja um número maior que zero
+    data_hora_venda: "required|date",
+    forma_pagamento: "required|string",
     id_cliente: "required|integer",
   };
 
   const validacao = new Validator(request.body, regras);
 
   if (validacao.fails()) {
-    return response.json(validacao.errors);
+    return response.status(400).json(validacao.errors);
   }
 
-  const valor_venda = request.body.valor_venda;
-  const data_hora_venda = request.body.data_hora_venda;
-  const forma_pagamento = request.body.forma_pagamento;
-  const id_cliente = request.body.id_cliente;
+  const { valor_venda, data_hora_venda, forma_pagamento, id_cliente } =
+    request.body;
 
   connection.query(
     "INSERT INTO venda (valor_venda, data_hora_venda, forma_pagamento, id_cliente) VALUES (?, ?, ?, ?)",
     [valor_venda, data_hora_venda, forma_pagamento, id_cliente],
     function (err, resultado) {
       if (err) {
-        return response.json({
+        return response.status(500).json({
           erro: "Ocorreram erros ao tentar salvar a informação",
         });
       }
 
-      if (resultado.affectedRows == 0) {
-        return response.json({
-          erro: `Ocorreram erros ao tentar salvar a informação`,
+      if (resultado.affectedRows === 0) {
+        return response.status(500).json({
+          erro: "Ocorreram erros ao tentar salvar a informação",
         });
       }
 
-      return response.json({
-        nome_cliente,
-        email,
-        rg,
-        cpf,
-        endereco,
-        contato,
+      return response.status(201).json({
+        valor_venda,
+        data_hora_venda,
+        forma_pagamento,
+        id_cliente,
         id: resultado.insertId,
       });
     }
   );
 }
 
-//function update
+// Function update
 function update(request, response) {
   const codigo = request.params.codigo;
 
   const regras = {
-    nome_cliente: "required|min:5",
-    email: "required|email",
-    rg: "required|integer",
-    cpf: "required|integer",
-    endereco: "required",
+    valor_venda: "required|numeric|min:0.01",
+    data_hora_venda: "required|date",
+    forma_pagamento: "required|string",
+    id_cliente: "required|integer",
   };
 
   const validacao = new Validator(request.body, regras);
 
   if (validacao.fails()) {
-    return response.json(validacao.errors);
+    return response.status(400).json(validacao.errors);
   }
 
-  //buscar o dado no bd
+  // Buscar o dado no BD
   connection.query(
-    "SELECT * FROM cliente WHERE id_cliente = ?",
+    "SELECT * FROM venda WHERE id_venda = ?",
     [codigo],
     function (err, resultado) {
       if (err) {
-        return response.json({ erro: "Ocorreram erros ao buscar os dados" });
+        return response
+          .status(500)
+          .json({ erro: "Ocorreram erros ao buscar os dados" });
       }
 
       if (resultado.length === 0) {
-        return response.json({
-          erro: `não foi possivel encontrar o contato`,
+        return response.status(404).json({
+          erro: `Não foi possível encontrar a venda`,
         });
       }
 
-      const nome_cliente = request.body.nome_cliente;
-      const email = request.body.email;
-      const rg = request.body.rg;
-      const cpf = request.body.cpf;
-      const endereco = request.body.endereco;
-      const contato = request.body.contato;
+      const { valor_venda, data_hora_venda, forma_pagamento, id_cliente } =
+        request.body;
 
       connection.query(
-        "UPDATE cliente SET nome_cliente = ?, email = ?, rg = ?, cpf = ?, endereco = ?, contato = ? WHERE id_cliente = ?",
-        [nome_cliente, email, rg, cpf, endereco, contato, codigo],
+        "UPDATE venda SET valor_venda = ?, data_hora_venda = ?, forma_pagamento = ?, id_cliente = ? WHERE id_venda = ?",
+        [valor_venda, data_hora_venda, forma_pagamento, id_cliente, codigo],
         function (err, resultado) {
           if (err) {
-            return response.json({
-              erro: "Ocorreu um erro ao tentar atualizar o contato",
+            return response.status(500).json({
+              erro: "Ocorreu um erro ao tentar atualizar a venda",
             });
           }
 
           if (resultado.affectedRows === 0) {
-            return response.json({
-              erro: "Nenhum contato foi atualizado",
+            return response.status(500).json({
+              erro: "Nenhuma venda foi atualizad",
             });
           }
-          return response.json({
-            nome_cliente,
-            email,
-            rg,
-            cpf,
-            endereco,
-            contato,
-            id: resultado.insertId,
+          return response.status(200).json({
+            valor_venda,
+            data_hora_venda,
+            forma_pagamento,
+            id_cliente,
+            id: codigo,
           });
         }
       );
@@ -163,31 +159,31 @@ function update(request, response) {
 }
 
 //function destroy
-function destroy(request, response) {
+/* function destroy(request, response) {
   const codigo = request.params.codigo;
 
   connection.query(
-    "DELETE FROM cliente WHERE id_cliente = ?",
+    "DELETE FROM venda WHERE id_venda = ?",
     [codigo],
     function (err, resultado) {
       if (err) {
         return response.json({
-          erro: "Ocorreu um erro ao tentar excluir o contato",
+          erro: "Ocorreu um erro ao tentar excluir a venda",
         });
       }
 
       if (resultado.affectedRows === 0) {
         return response.json({
-          erro: `Contato #${codigo} não foi encontrado`,
+          erro: `Venda #${codigo} não foi encontrado`,
         });
       }
 
       return response.json({
-        mensagem: `Contato ${codigo} foi deletado com sucesso`,
+        mensagem: `Venda ${codigo} foi deletada com sucesso`,
       });
     }
   );
-}
+}*/
 
 // Module exports sempre no final do arquivo
-module.exports = { show, list, create, update, destroy };
+module.exports = { show, list, create, update /*destroy*/ };
