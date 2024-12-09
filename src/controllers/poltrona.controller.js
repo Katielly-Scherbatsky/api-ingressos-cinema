@@ -69,12 +69,12 @@ function create(request, response) {
     return response.status(400).json(validacao.errors);
   }
 
-  const { numero_poltrona, fileira, status_poltrona } = request.body;
+  const { numero, fileira, status_poltrona } = request.body;
 
   // Verifica se a poltrona já existe na fileira antes de realizar a inserção
   connection.query(
-    "SELECT COUNT(*) as total FROM poltrona WHERE numero_poltrona = ? AND fileira = ?",
-    [numero_poltrona, fileira],
+    "SELECT COUNT(*) as total FROM poltrona WHERE numero = ? AND fileira = ?",
+    [numero, fileira],
     function (err, resultadoConsulta) {
       if (err) {
         return response.status(500).json({

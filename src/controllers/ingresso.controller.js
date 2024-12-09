@@ -76,7 +76,7 @@ function create(request, response) {
 
   // Verificar se a venda com o id_venda já existe
   connection.query(
-    "SELECT COUNT(*) AS totalVenda FROM venda WHERE id_venda = ?",
+    "SELECT id_venda FROM ingressos WHERE id_venda = ?",
     [id_venda],
     function (errVerificacaoVenda, resultadoVerificacaoVenda) {
       if (errVerificacaoVenda) {
@@ -85,9 +85,9 @@ function create(request, response) {
         });
       }
 
-      if (resultadoVerificacaoVenda[0].totalVenda > 0) {
+      if (resultadoVerificacaoVenda[0].id_venda != null) {
         return response.status(400).json({
-          erro: `A venda com o id_venda ${id_venda} já existe no sistema.`,
+          erro: `A venda com o id_venda ${id_venda} já vinculada a um ingresso.`,
         });
       }
 
@@ -102,11 +102,13 @@ function create(request, response) {
             });
           }
 
-          if (resultadoVerificacaoSessao[0].totalSessao > 0) {
-            return response.status(400).json({
-              erro: `A sessão com o id_sessao ${id_sessao} já existe no sistema.`,
-            });
-          }
+          // if (resultadoVerificacaoSessao[0].totalSessao > 0) {
+          //   return response.status(400).json({
+          //     erro: `A sessão com o id_sessao ${id_sessao} já existe no sistema.`,
+          //   });
+          // }
+
+          console.log("OK");
 
           // Se a venda e a sessão não existirem, prosseguir com a inserção
           connection.query(

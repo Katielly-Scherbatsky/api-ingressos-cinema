@@ -10,7 +10,7 @@ function show(req, res) {
   }
 
   connection.query(
-    "SELECT * FROM cliente WHERE id_cliente = ?",
+    "SELECT * FROM cliente WHERE id_cli = ?",
     [codigo],
     function (err, resultado) {
       if (err) {
